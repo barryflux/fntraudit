@@ -28,28 +28,26 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Expander">
                         <Border Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="8"
-                        SnapsToDevicePixels="True">
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8"
+                                SnapsToDevicePixels="True">
 
                             <DockPanel LastChildFill="True">
-                                <!-- HEADER -->
                                 <ToggleButton x:Name="HeaderSite"
-                                      DockPanel.Dock="Top"
-                                      Style="{x:Null}"
-                                      MinHeight="52"
-                                      HorizontalAlignment="Stretch"
-                                      HorizontalContentAlignment="Stretch"
-                                      VerticalContentAlignment="Center"
-                                      Background="#F3F4F6"
-                                      BorderBrush="Transparent"
-                                      BorderThickness="0"
-                                      Padding="0"
-                                      IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}">
+                                              DockPanel.Dock="Top"
+                                              Style="{x:Null}"
+                                              MinHeight="52"
+                                              HorizontalAlignment="Stretch"
+                                              HorizontalContentAlignment="Stretch"
+                                              VerticalContentAlignment="Center"
+                                              Background="#F3F4F6"
+                                              BorderBrush="Transparent"
+                                              BorderThickness="0"
+                                              Padding="0"
+                                              IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}">
 
-                                    <Border Padding="16,12"
-                                    Background="Transparent">
+                                    <Border Padding="16,12" Background="Transparent">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
@@ -57,34 +55,32 @@
                                             </Grid.ColumnDefinitions>
 
                                             <TextBlock Grid.Column="0"
-                                               Text="{TemplateBinding Header}"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Left"
-                                               TextWrapping="Wrap"
-                                               FontSize="15"
-                                               FontWeight="SemiBold"
-                                               Foreground="#1F2937"/>
+                                                       Text="{TemplateBinding Header}"
+                                                       VerticalAlignment="Center"
+                                                       HorizontalAlignment="Left"
+                                                       TextWrapping="Wrap"
+                                                       FontSize="15"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=#1F2937}"/>
 
                                             <TextBlock x:Name="Chevron"
-                                               Grid.Column="1"
-                                               Margin="12,0,0,0"
-                                               VerticalAlignment="Center"
-                                               FontSize="16"
-                                               FontWeight="Bold"
-                                               Foreground="#555555"
-                                               Text="⌄"/>
+                                                       Grid.Column="1"
+                                                       Margin="12,0,0,0"
+                                                       VerticalAlignment="Center"
+                                                       FontSize="16"
+                                                       FontWeight="Bold"
+                                                       Foreground="#555555"
+                                                       Text="⌄"/>
                                         </Grid>
                                     </Border>
                                 </ToggleButton>
 
-                                <!-- CONTENT -->
                                 <Border x:Name="ExpandSite"
-                                Visibility="Collapsed"
-                                Background="White"
-                                BorderBrush="#E5E7EB"
-                                BorderThickness="1,1,0,0">
-                                    <ContentPresenter Margin="12"
-                                              Focusable="False"/>
+                                        Visibility="Collapsed"
+                                        Background="White"
+                                        BorderBrush="#E5E7EB"
+                                        BorderThickness="1,1,0,0">
+                                    <ContentPresenter Margin="12" Focusable="False"/>
                                 </Border>
                             </DockPanel>
                         </Border>
@@ -118,7 +114,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
         <materialDesign:Card Grid.Row="0"
                              Padding="20"
                              Margin="0,0,0,16"
@@ -146,12 +141,10 @@
             </DockPanel>
         </materialDesign:Card>
 
-        <!-- Body -->
         <materialDesign:Card Grid.Row="1"
                              Padding="20"
                              materialDesign:ShadowAssist.ShadowDepth="Depth1">
             <TabControl SelectedIndex="0">
-                <!-- GENERAL -->
                 <TabItem Header="Général">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel Margin="4">
@@ -159,6 +152,8 @@
                             <Expander Header="Informations générales"
                                       Expanded="AccordionExpander_Expanded"
                                       Margin="0,0,0,12"
+                                      BorderBrush="{Binding GeneralSectionBrush}"
+                                      Tag="{Binding GeneralSectionBrush}"
                                       Style="{StaticResource CustomExpanderStyle}">
                                 <Grid Margin="12">
                                     <Grid.ColumnDefinitions>
@@ -173,6 +168,7 @@
 
                                     <TextBox Grid.Row="0" Grid.Column="0" Margin="0,0,10,12"
                                              Text="{Binding Intitule, UpdateSourceTrigger=PropertyChanged}"
+                                             BorderBrush="{Binding IntituleBorderBrush}"
                                              materialDesign:HintAssist.Hint="Nom de la société / Intitulé"
                                              Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
 
@@ -183,6 +179,7 @@
 
                                     <TextBox Grid.Row="1" Grid.Column="0" Margin="0,0,10,12"
                                              Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                                             BorderBrush="{Binding EmailBorderBrush}"
                                              materialDesign:HintAssist.Hint="Email"
                                              Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
 
@@ -193,6 +190,7 @@
 
                                     <TextBox Grid.Row="2" Grid.Column="0" Margin="0,0,10,0"
                                              Text="{Binding Siret, UpdateSourceTrigger=PropertyChanged}"
+                                             BorderBrush="{Binding SiretBorderBrush}"
                                              materialDesign:HintAssist.Hint="SIRET"
                                              Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
 
@@ -206,6 +204,8 @@
                             <Expander Header="Interlocuteurs"
                                       Expanded="AccordionExpander_Expanded"
                                       Margin="0,0,0,12"
+                                      BorderBrush="{Binding InterlocuteurSectionBrush}"
+                                      Tag="{Binding InterlocuteurSectionBrush}"
                                       Style="{StaticResource CustomExpanderStyle}">
                                 <Grid Margin="12">
                                     <Grid.ColumnDefinitions>
@@ -224,11 +224,13 @@
 
                                     <TextBox Grid.Row="0" Grid.Column="1" Margin="10,0,0,12"
                                              Text="{Binding PersonneInterrogee, UpdateSourceTrigger=PropertyChanged}"
+                                             BorderBrush="{Binding PersonneInterrogeeBorderBrush}"
                                              materialDesign:HintAssist.Hint="Personne interrogée"
                                              Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
 
                                     <TextBox Grid.Row="1" Grid.Column="0" Margin="0,0,10,0"
                                              Text="{Binding Fonction, UpdateSourceTrigger=PropertyChanged}"
+                                             BorderBrush="{Binding FonctionBorderBrush}"
                                              materialDesign:HintAssist.Hint="Fonction"
                                              Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                                 </Grid>
@@ -278,7 +280,6 @@
                     </ScrollViewer>
                 </TabItem>
 
-                <!-- ACTIVITES -->
                 <TabItem Header="Activités">
                     <Grid Margin="4">
                         <components:EntityListView
@@ -286,11 +287,10 @@
                             AddCommand="{Binding AddActivityCommand}"
                             EditCommand="{Binding EditActivityCommand}"
                             DeleteCommand="{Binding DeleteActivityCommand}"
-                            AddButtonText="Ajouter activité" />     
+                            AddButtonText="Ajouter activité" />
                     </Grid>
                 </TabItem>
 
-                <!-- ORGANISATION -->
                 <TabItem Header="Organisation">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel Margin="4">
@@ -329,54 +329,79 @@
                             <Expander Header="Tranche d'effectif"
                                       Expanded="AccordionExpander_Expanded"
                                       Margin="0,0,0,12"
+                                      BorderBrush="{Binding EffectifSectionBrush}"
+                                      Tag="{Binding EffectifSectionBrush}"
                                       Style="{StaticResource CustomExpanderStyle}">
-                                <WrapPanel Margin="12">
-                                    <RadioButton Content="1 à 10"
-                                                 GroupName="EffectifRange"
-                                                 Margin="0,0,16,8"
-                                                 IsChecked="{Binding Has1SalOrMore}"/>
-                                    <RadioButton Content="11 à 50"
-                                                 GroupName="EffectifRange"
-                                                 Margin="0,0,16,8"
-                                                 IsChecked="{Binding Has11SalOrMore}"/>
-                                    <RadioButton Content="51 à 300"
-                                                 GroupName="EffectifRange"
-                                                 Margin="0,0,16,8"
-                                                 IsChecked="{Binding Has50SalOrMore}"/>
-                                    <RadioButton Content="301 à 1000"
-                                                 GroupName="EffectifRange"
-                                                 Margin="0,0,16,8"
-                                                 IsChecked="{Binding Has300SalOrMore}"/>
-                                    <RadioButton Content="+ de 1000"
-                                                 GroupName="EffectifRange"
-                                                 Margin="0,0,16,8"
-                                                 IsChecked="{Binding Has1000SalOrMore}"/>
-                                </WrapPanel>
+                                <Border Margin="12"
+                                        Padding="8"
+                                        BorderThickness="1"
+                                        BorderBrush="{Binding EffectifRangeBorderBrush}"
+                                        CornerRadius="6">
+                                    <WrapPanel>
+                                        <RadioButton Content="1 à 10"
+                                                     GroupName="EffectifRange"
+                                                     Margin="0,0,16,8"
+                                                     IsChecked="{Binding Has1SalOrMore}"/>
+                                        <RadioButton Content="11 à 50"
+                                                     GroupName="EffectifRange"
+                                                     Margin="0,0,16,8"
+                                                     IsChecked="{Binding Has11SalOrMore}"/>
+                                        <RadioButton Content="51 à 300"
+                                                     GroupName="EffectifRange"
+                                                     Margin="0,0,16,8"
+                                                     IsChecked="{Binding Has50SalOrMore}"/>
+                                        <RadioButton Content="301 à 1000"
+                                                     GroupName="EffectifRange"
+                                                     Margin="0,0,16,8"
+                                                     IsChecked="{Binding Has300SalOrMore}"/>
+                                        <RadioButton Content="+ de 1000"
+                                                     GroupName="EffectifRange"
+                                                     Margin="0,0,16,8"
+                                                     IsChecked="{Binding Has1000SalOrMore}"/>
+                                    </WrapPanel>
+                                </Border>
                             </Expander>
 
                             <Expander Header="Contexte social"
                                       Expanded="AccordionExpander_Expanded"
+                                      BorderBrush="{Binding SocialContextSectionBrush}"
+                                      Tag="{Binding SocialContextSectionBrush}"
                                       Style="{StaticResource CustomExpanderStyle}">
-                                <WrapPanel Margin="12">
-                                    <CheckBox Content="CSE"
-                                              Margin="0,0,20,8"
-                                              IsChecked="{Binding Cse}"/>
-                                    <CheckBox Content="PV de carence"
-                                              Margin="0,0,20,8"
-                                              IsChecked="{Binding PvCarence}"/>
-                                    <CheckBox Content="Voyageur"
-                                              Margin="0,0,20,8"
-                                              IsChecked="{Binding IsVoyageur}"/>
-                                    <CheckBox Content="Marchandise / Transport"
-                                              Margin="0,0,20,8"
-                                              IsChecked="{Binding IsTransport}"/>
-                                </WrapPanel>
+                                <StackPanel Margin="12">
+                                    <Border Padding="8"
+                                            Margin="0,0,0,10"
+                                            BorderThickness="1"
+                                            BorderBrush="{Binding CsePvBorderBrush}"
+                                            CornerRadius="6">
+                                        <WrapPanel>
+                                            <CheckBox Content="CSE"
+                                                      Margin="0,0,20,8"
+                                                      IsChecked="{Binding Cse}"/>
+                                            <CheckBox Content="PV de carence"
+                                                      Margin="0,0,20,8"
+                                                      IsChecked="{Binding PvCarence}"/>
+                                        </WrapPanel>
+                                    </Border>
+
+                                    <Border Padding="8"
+                                            BorderThickness="1"
+                                            BorderBrush="{Binding TransportTypeBorderBrush}"
+                                            CornerRadius="6">
+                                        <WrapPanel>
+                                            <CheckBox Content="Voyageur"
+                                                      Margin="0,0,20,8"
+                                                      IsChecked="{Binding IsVoyageur}"/>
+                                            <CheckBox Content="Marchandise / Transport"
+                                                      Margin="0,0,20,8"
+                                                      IsChecked="{Binding IsTransport}"/>
+                                        </WrapPanel>
+                                    </Border>
+                                </StackPanel>
                             </Expander>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
 
-                <!-- VISUEL -->
                 <TabItem Header="Visuel">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel Margin="4">
@@ -439,7 +464,6 @@
             </TabControl>
         </materialDesign:Card>
 
-        <!-- Footer -->
         <materialDesign:Card Grid.Row="2"
                              Padding="16"
                              Margin="0,16,0,0"
