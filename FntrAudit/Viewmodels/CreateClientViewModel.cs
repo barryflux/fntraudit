@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using FntrAudit.Helpers;
 using FntrAudit.Models;
 using FntrAudit.Services.Activites;
+using FntrAudit.Services.LogoService;
 using FntrAudit.Viewmodels.Common;
 using FntrAudit.Views;
 
@@ -22,6 +23,7 @@ namespace FntrAudit.Viewmodels
 
         private readonly Client? _sourceClient;
         private readonly IActivityService _activityService;
+        private readonly ILogoService _logoService;
         private readonly RelayCommand<EntityRowViewModel> _activitySelectionChangedCommand;
 
         public bool IsEditMode => _sourceClient != null;
@@ -40,9 +42,10 @@ namespace FntrAudit.Viewmodels
         public ICommand EditActivityCommand { get; }
         public ICommand DeleteActivityCommand { get; }
 
-        public CreateClientViewModel(IActivityService activityService)
+        public CreateClientViewModel(IActivityService activityService, ILogoService logoService)
         {
             _activityService = activityService;
+            _logoService = logoService;
             _activitySelectionChangedCommand = new RelayCommand<EntityRowViewModel>(ActivitySelectionChanged);
 
             SaveCommand = new RelayCommand(Save);
@@ -57,7 +60,7 @@ namespace FntrAudit.Viewmodels
             _ = LoadActivitiesAsync();
         }
 
-        public CreateClientViewModel(Client client, IActivityService activityService) : this(activityService)
+        public CreateClientViewModel(Client client, IActivityService activityService, ILogoService logoService) : this(activityService, logoService)
         {
             _sourceClient = client;
 
@@ -290,7 +293,25 @@ namespace FntrAudit.Viewmodels
 
         private void PickLogo()
         {
-            // à brancher plus tard avec un OpenFileDialog
+            try
+            {
+                ErrorMessage = null;
+                var dialogVm = new LogoSelectionDialogViewModel(_logoService);
+                var dialog = new LogoSelectionDialog(dialogVm)
+                {
+                    Owner = Application.Current.MainWindow
+                };
+
+                if (dialog.ShowDialog() != true || dialogVm.SelectedLogo?.Logolo == null)
+                    return;
+
+                LogoBytes = dialogVm.SelectedLogo.Logolo;
+                LogoPreview = ByteArrayToImage(dialogVm.SelectedLogo.Logolo);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Erreur lors de la sélection du logo : {ex.Message}";
+            }
         }
 
         private void RemoveLogo()
