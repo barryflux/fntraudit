@@ -9,7 +9,7 @@ using FntrAudit.Helpers;
 using FntrAudit.Services.Activites;
 using FntrAudit.Services.Auth;
 using FntrAudit.Services.Clients;
-using FntrAudit.Services.Logos;
+using FntrAudit.Services.LogoService;
 using FntrAudit.Viewmodels.Navigation;
 using Microsoft.Extensions.DependencyInjection;
 
