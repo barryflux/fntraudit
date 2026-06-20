@@ -328,13 +328,11 @@ namespace FntrAudit.Viewmodels
             if (row?.Item is not Activity activity)
                 return;
 
-            var result = MessageBox.Show(
-                $"Supprimer l'activité '{activity.intitule}' ?",
-                "Confirmation",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
+            bool confirmed = DeleteConfirmationDialog.Confirm(
+                Application.Current.MainWindow,
+                $"Supprimer l'activité '{activity.intitule}' ?");
 
-            if (result != MessageBoxResult.Yes)
+            if (!confirmed)
                 return;
 
             try
