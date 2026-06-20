@@ -8,6 +8,8 @@ namespace FntrAudit.Views
 {
     public partial class ClientEditDialog : Window
     {
+        private const string DefaultExpanderHeaderColor = "#1F2937";
+
         public ClientEditDialog(CreateClientViewModel viewModel)
         {
             InitializeComponent();
@@ -19,23 +21,22 @@ namespace FntrAudit.Views
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            EnsureDefaultExpanderHeaderColor(this);
+            DisableExpanderHeaderValidationColor(this);
         }
 
-        private void EnsureDefaultExpanderHeaderColor(DependencyObject parent)
+        private void DisableExpanderHeaderValidationColor(DependencyObject parent)
         {
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
             {
                 var child = VisualTreeHelper.GetChild(parent, i);
 
-                if (child is Expander expander &&
-                    BindingOperations.GetBindingBase(expander, FrameworkElement.TagProperty) == null &&
-                    expander.Tag == null)
+                if (child is Expander expander)
                 {
-                    expander.Tag = "#1F2937";
+                    BindingOperations.ClearBinding(expander, FrameworkElement.TagProperty);
+                    expander.Tag = DefaultExpanderHeaderColor;
                 }
 
-                EnsureDefaultExpanderHeaderColor(child);
+                DisableExpanderHeaderValidationColor(child);
             }
         }
 
