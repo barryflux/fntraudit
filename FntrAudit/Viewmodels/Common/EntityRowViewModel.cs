@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace FntrAudit.Viewmodels.Common
 {
@@ -54,6 +55,20 @@ namespace FntrAudit.Viewmodels.Common
                 OnPropertyChanged();
             }
         }
+
+        private bool _showSelectionCheckBox;
+        public bool ShowSelectionCheckBox
+        {
+            get => _showSelectionCheckBox;
+            set
+            {
+                if (_showSelectionCheckBox == value) return;
+                _showSelectionCheckBox = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand? SelectionChangedCommand { get; set; }
 
         public EntityRowViewModel()
         {

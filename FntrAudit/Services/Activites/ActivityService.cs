@@ -18,10 +18,10 @@ namespace FntrAudit.Services.Activites
             _dbContext = dbContext;
         }
 
-        public async Task<List<Activity>> GetActivitiesAsync( CancellationToken cancellationToken = default)
+        public async Task<List<Activity>> GetActivitiesAsync(CancellationToken cancellationToken = default)
         {
             var activities = await _dbContext.Activities
-                .AsNoTracking()               
+                .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
             return activities
@@ -58,6 +58,7 @@ namespace FntrAudit.Services.Activites
 
             existingActivity.intitule = activity.intitule;
             existingActivity.auditId = activity.auditId;
+            existingActivity.isOk = activity.isOk;
 
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
@@ -75,4 +76,3 @@ namespace FntrAudit.Services.Activites
         }
     }
 }
-

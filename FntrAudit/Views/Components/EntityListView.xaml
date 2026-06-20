@@ -64,11 +64,20 @@
 
                         <Grid>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <StackPanel Grid.Column="0"
+                            <CheckBox Grid.Column="0"
+                                      Margin="0,0,12,0"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding Item.isOk, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      Command="{Binding SelectionChangedCommand}"
+                                      CommandParameter="{Binding}"
+                                      Visibility="{Binding ShowSelectionCheckBox, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                            <StackPanel Grid.Column="1"
                                         VerticalAlignment="Center">
                                 <TextBlock Text="{Binding Title}"
                                            FontSize="16"
@@ -83,7 +92,7 @@
                                            Visibility="{Binding Subtitle, Converter={StaticResource StringNullOrEmptyToVisibilityConverter}}"/>
                             </StackPanel>
 
-                            <StackPanel Grid.Column="1"
+                            <StackPanel Grid.Column="2"
                                         Orientation="Horizontal"
                                         VerticalAlignment="Center"
                                         Margin="12,0,0,0">
@@ -116,7 +125,9 @@
         </ListBox>
 
         <!-- Footer -->
-        <DockPanel Grid.Row="3" Margin="0,12,0,0">
+        <DockPanel Grid.Row="3"
+                   Margin="0,12,0,0"
+                   Visibility="{Binding ShowAddButton, RelativeSource={RelativeSource AncestorType={x:Type components:EntityListView}}, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Button DockPanel.Dock="Right"
                     Padding="14,8"
                     HorizontalAlignment="Right"
@@ -124,7 +135,7 @@
                     Command="{Binding AddCommand, RelativeSource={RelativeSource AncestorType={x:Type components:EntityListView}}}">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Plus" Width="18" Height="18" Margin="0,0,8,0"/>
-                    <TextBlock Text="Ajouter"/>
+                    <TextBlock Text="{Binding AddButtonText, RelativeSource={RelativeSource AncestorType={x:Type components:EntityListView}}}"/>
                 </StackPanel>
             </Button>
         </DockPanel>
