@@ -18,7 +18,8 @@ namespace FntrAudit.Data
         public DbSet<User> Aspnetusers { get; set; }
         public DbSet<Client> Client { get; set; }
         public DbSet<Activity> Activities { get; set; }
-      //  public DbSet<SocieteUser> SocieteUser { get; set; }
+        public DbSet<Logo> Logo { get; set; }
+        //  public DbSet<SocieteUser> SocieteUser { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
