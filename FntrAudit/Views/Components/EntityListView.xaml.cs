@@ -86,6 +86,25 @@ namespace FntrAudit.Views.Components
             set => SetValue(EditItemCommandProperty, value);
         }
 
+        public static readonly DependencyProperty EditCommandProperty =
+            DependencyProperty.Register(
+                nameof(EditCommand),
+                typeof(ICommand),
+                typeof(EntityListView),
+                new PropertyMetadata(null, OnEditCommandChanged));
+
+        public ICommand? EditCommand
+        {
+            get => (ICommand?)GetValue(EditCommandProperty);
+            set => SetValue(EditCommandProperty, value);
+        }
+
+        private static void OnEditCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is EntityListView view)
+                view.EditItemCommand = e.NewValue as ICommand;
+        }
+
         public static readonly DependencyProperty DeleteItemCommandProperty =
             DependencyProperty.Register(
                 nameof(DeleteItemCommand),
@@ -99,6 +118,25 @@ namespace FntrAudit.Views.Components
             set => SetValue(DeleteItemCommandProperty, value);
         }
 
+        public static readonly DependencyProperty DeleteCommandProperty =
+            DependencyProperty.Register(
+                nameof(DeleteCommand),
+                typeof(ICommand),
+                typeof(EntityListView),
+                new PropertyMetadata(null, OnDeleteCommandChanged));
+
+        public ICommand? DeleteCommand
+        {
+            get => (ICommand?)GetValue(DeleteCommandProperty);
+            set => SetValue(DeleteCommandProperty, value);
+        }
+
+        private static void OnDeleteCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is EntityListView view)
+                view.DeleteItemCommand = e.NewValue as ICommand;
+        }
+
         public static readonly DependencyProperty ShowSearchBoxProperty =
             DependencyProperty.Register(
                 nameof(ShowSearchBox),
@@ -110,6 +148,19 @@ namespace FntrAudit.Views.Components
         {
             get => (bool)GetValue(ShowSearchBoxProperty);
             set => SetValue(ShowSearchBoxProperty, value);
+        }
+
+        public static readonly DependencyProperty AddButtonTextProperty =
+            DependencyProperty.Register(
+                nameof(AddButtonText),
+                typeof(string),
+                typeof(EntityListView),
+                new PropertyMetadata("Ajouter"));
+
+        public string AddButtonText
+        {
+            get => (string)GetValue(AddButtonTextProperty);
+            set => SetValue(AddButtonTextProperty, value);
         }
 
         public static readonly DependencyProperty SearchTextProperty =
@@ -186,11 +237,11 @@ namespace FntrAudit.Views.Components
         }
 
         public static readonly DependencyProperty OpenItemCommandProperty =
-        DependencyProperty.Register(
-        nameof(OpenItemCommand),
-        typeof(ICommand),
-        typeof(EntityListView),
-        new PropertyMetadata(null));
+            DependencyProperty.Register(
+                nameof(OpenItemCommand),
+                typeof(ICommand),
+                typeof(EntityListView),
+                new PropertyMetadata(null));
 
         public ICommand? OpenItemCommand
         {
