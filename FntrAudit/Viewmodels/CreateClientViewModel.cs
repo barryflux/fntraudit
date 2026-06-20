@@ -19,12 +19,16 @@ namespace FntrAudit.Viewmodels
 {
     public class CreateClientViewModel : INotifyPropertyChanged
     {
+        private const string ErrorBrush = "#C62828";
+        private const string DefaultBorderBrush = "#D0D0D0";
+
         public event PropertyChangedEventHandler? PropertyChanged;
         public event Action<bool>? RequestClose;
 
         private readonly Client? _sourceClient;
         private readonly IActivityService _activityService;
         private readonly RelayCommand<EntityRowViewModel> _activitySelectionChangedCommand;
+        private bool _validationRequested;
 
         public bool IsEditMode => _sourceClient != null;
         public string DialogTitle => IsEditMode ? "Modifier un client" : "Créer un client";
@@ -102,16 +106,43 @@ namespace FntrAudit.Viewmodels
         }
 
         private string? _intitule;
-        public string? Intitule { get => _intitule; set { _intitule = value; OnPropertyChanged(); } }
+        public string? Intitule
+        {
+            get => _intitule;
+            set
+            {
+                _intitule = value;
+                OnPropertyChanged();
+                NotifyValidationPropertiesChanged();
+            }
+        }
 
         private string? _personneSollicitante;
         public string? PersonneSollicitante { get => _personneSollicitante; set { _personneSollicitante = value; OnPropertyChanged(); } }
 
         private string? _personneInterrogee;
-        public string? PersonneInterrogee { get => _personneInterrogee; set { _personneInterrogee = value; OnPropertyChanged(); } }
+        public string? PersonneInterrogee
+        {
+            get => _personneInterrogee;
+            set
+            {
+                _personneInterrogee = value;
+                OnPropertyChanged();
+                NotifyValidationPropertiesChanged();
+            }
+        }
 
         private string? _fonction;
-        public string? Fonction { get => _fonction; set { _fonction = value; OnPropertyChanged(); } }
+        public string? Fonction
+        {
+            get => _fonction;
+            set
+            {
+                _fonction = value;
+                OnPropertyChanged();
+                NotifyValidationPropertiesChanged();
+            }
+        }
 
         private string? _statut;
         public string? Statut { get => _statut; set { _statut = value; OnPropertyChanged(); } }
@@ -123,7 +154,16 @@ namespace FntrAudit.Viewmodels
         public string? RaisonSociale { get => _raisonSociale; set { _raisonSociale = value; OnPropertyChanged(); } }
 
         private string? _siret;
-        public string? Siret { get => _siret; set { _siret = value; OnPropertyChanged(); } }
+        public string? Siret
+        {
+            get => _siret;
+            set
+            {
+                _siret = value;
+                OnPropertyChanged();
+                NotifyValidationPropertiesChanged();
+            }
+        }
 
         private string? _adresse;
         public string? Adresse { get => _adresse; set { _adresse = value; OnPropertyChanged(); } }
@@ -153,34 +193,43 @@ namespace FntrAudit.Viewmodels
         public string? NbreVehiculeMoteur { get => _nbreVehiculeMoteur; set { _nbreVehiculeMoteur = value; OnPropertyChanged(); } }
 
         private string? _email;
-        public string? Email { get => _email; set { _email = value; OnPropertyChanged(); } }
+        public string? Email
+        {
+            get => _email;
+            set
+            {
+                _email = value;
+                OnPropertyChanged();
+                NotifyValidationPropertiesChanged();
+            }
+        }
 
         private bool _has1SalOrMore;
-        public bool Has1SalOrMore { get => _has1SalOrMore; set { _has1SalOrMore = value; OnPropertyChanged(); } }
+        public bool Has1SalOrMore { get => _has1SalOrMore; set { _has1SalOrMore = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
 
         private bool _has11SalOrMore;
-        public bool Has11SalOrMore { get => _has11SalOrMore; set { _has11SalOrMore = value; OnPropertyChanged(); } }
+        public bool Has11SalOrMore { get => _has11SalOrMore; set { _has11SalOrMore = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
 
         private bool _has50SalOrMore;
-        public bool Has50SalOrMore { get => _has50SalOrMore; set { _has50SalOrMore = value; OnPropertyChanged(); } }
+        public bool Has50SalOrMore { get => _has50SalOrMore; set { _has50SalOrMore = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
 
         private bool _has300SalOrMore;
-        public bool Has300SalOrMore { get => _has300SalOrMore; set { _has300SalOrMore = value; OnPropertyChanged(); } }
+        public bool Has300SalOrMore { get => _has300SalOrMore; set { _has300SalOrMore = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
 
         private bool _has1000SalOrMore;
-        public bool Has1000SalOrMore { get => _has1000SalOrMore; set { _has1000SalOrMore = value; OnPropertyChanged(); } }
+        public bool Has1000SalOrMore { get => _has1000SalOrMore; set { _has1000SalOrMore = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
 
         private bool _pvCarence;
-        public bool PvCarence { get => _pvCarence; set { _pvCarence = value; OnPropertyChanged(); } }
+        public bool PvCarence { get => _pvCarence; set { _pvCarence = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
 
         private bool _cse;
-        public bool Cse { get => _cse; set { _cse = value; OnPropertyChanged(); } }
+        public bool Cse { get => _cse; set { _cse = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
 
         private bool _isVoyageur;
-        public bool IsVoyageur { get => _isVoyageur; set { _isVoyageur = value; OnPropertyChanged(); } }
+        public bool IsVoyageur { get => _isVoyageur; set { _isVoyageur = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
 
         private bool _isTransport;
-        public bool IsTransport { get => _isTransport; set { _isTransport = value; OnPropertyChanged(); } }
+        public bool IsTransport { get => _isTransport; set { _isTransport = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
 
         private BitmapImage? _logoPreview;
         public BitmapImage? LogoPreview { get => _logoPreview; set { _logoPreview = value; OnPropertyChanged(); } }
@@ -191,19 +240,45 @@ namespace FntrAudit.Viewmodels
         private string? _errorMessage;
         public string? ErrorMessage { get => _errorMessage; set { _errorMessage = value; OnPropertyChanged(); } }
 
+        public bool IsIntituleInvalid => _validationRequested && string.IsNullOrWhiteSpace(Intitule);
+        public bool IsEmailInvalid => _validationRequested && (string.IsNullOrWhiteSpace(Email) || !IsValidEmail(Email));
+        public bool IsSiretInvalid => _validationRequested && string.IsNullOrWhiteSpace(Siret);
+        public bool IsPersonneInterrogeeInvalid => _validationRequested && string.IsNullOrWhiteSpace(PersonneInterrogee);
+        public bool IsFonctionInvalid => _validationRequested && string.IsNullOrWhiteSpace(Fonction);
+        public bool IsEffectifRangeInvalid => _validationRequested && !HasAnyEffectifRange;
+        public bool IsCsePvInvalid => _validationRequested && !Cse && !PvCarence;
+        public bool IsTransportTypeInvalid => _validationRequested && !IsVoyageur && !IsTransport;
+
+        public bool HasGeneralErrors => IsIntituleInvalid || IsEmailInvalid || IsSiretInvalid;
+        public bool HasInterlocuteurErrors => IsPersonneInterrogeeInvalid || IsFonctionInvalid;
+        public bool HasEffectifErrors => IsEffectifRangeInvalid;
+        public bool HasSocialContextErrors => IsCsePvInvalid || IsTransportTypeInvalid;
+
+        public string GeneralSectionBrush => HasGeneralErrors ? ErrorBrush : DefaultBorderBrush;
+        public string InterlocuteurSectionBrush => HasInterlocuteurErrors ? ErrorBrush : DefaultBorderBrush;
+        public string EffectifSectionBrush => HasEffectifErrors ? ErrorBrush : DefaultBorderBrush;
+        public string SocialContextSectionBrush => HasSocialContextErrors ? ErrorBrush : DefaultBorderBrush;
+
+        public string IntituleBorderBrush => IsIntituleInvalid ? ErrorBrush : DefaultBorderBrush;
+        public string EmailBorderBrush => IsEmailInvalid ? ErrorBrush : DefaultBorderBrush;
+        public string SiretBorderBrush => IsSiretInvalid ? ErrorBrush : DefaultBorderBrush;
+        public string PersonneInterrogeeBorderBrush => IsPersonneInterrogeeInvalid ? ErrorBrush : DefaultBorderBrush;
+        public string FonctionBorderBrush => IsFonctionInvalid ? ErrorBrush : DefaultBorderBrush;
+        public string EffectifRangeBorderBrush => IsEffectifRangeInvalid ? ErrorBrush : DefaultBorderBrush;
+        public string CsePvBorderBrush => IsCsePvInvalid ? ErrorBrush : DefaultBorderBrush;
+        public string TransportTypeBorderBrush => IsTransportTypeInvalid ? ErrorBrush : DefaultBorderBrush;
+
+        private bool HasAnyEffectifRange => Has1SalOrMore || Has11SalOrMore || Has50SalOrMore || Has300SalOrMore || Has1000SalOrMore;
+
         public bool Validate()
         {
+            _validationRequested = true;
+            NotifyValidationPropertiesChanged();
             ErrorMessage = null;
 
-            if (string.IsNullOrWhiteSpace(Intitule))
+            if (HasGeneralErrors || HasInterlocuteurErrors || HasEffectifErrors || HasSocialContextErrors)
             {
-                ErrorMessage = "Le nom de la société est obligatoire.";
-                return false;
-            }
-
-            if (!string.IsNullOrWhiteSpace(Email) && !IsValidEmail(Email))
-            {
-                ErrorMessage = "Le format de l'email est invalide.";
+                ErrorMessage = "Veuillez renseigner tous les champs obligatoires avant d'enregistrer.";
                 return false;
             }
 
@@ -421,6 +496,34 @@ namespace FntrAudit.Viewmodels
                     SelectionChangedCommand = _activitySelectionChangedCommand
                 });
             }
+        }
+
+        private void NotifyValidationPropertiesChanged()
+        {
+            OnPropertyChanged(nameof(IsIntituleInvalid));
+            OnPropertyChanged(nameof(IsEmailInvalid));
+            OnPropertyChanged(nameof(IsSiretInvalid));
+            OnPropertyChanged(nameof(IsPersonneInterrogeeInvalid));
+            OnPropertyChanged(nameof(IsFonctionInvalid));
+            OnPropertyChanged(nameof(IsEffectifRangeInvalid));
+            OnPropertyChanged(nameof(IsCsePvInvalid));
+            OnPropertyChanged(nameof(IsTransportTypeInvalid));
+            OnPropertyChanged(nameof(HasGeneralErrors));
+            OnPropertyChanged(nameof(HasInterlocuteurErrors));
+            OnPropertyChanged(nameof(HasEffectifErrors));
+            OnPropertyChanged(nameof(HasSocialContextErrors));
+            OnPropertyChanged(nameof(GeneralSectionBrush));
+            OnPropertyChanged(nameof(InterlocuteurSectionBrush));
+            OnPropertyChanged(nameof(EffectifSectionBrush));
+            OnPropertyChanged(nameof(SocialContextSectionBrush));
+            OnPropertyChanged(nameof(IntituleBorderBrush));
+            OnPropertyChanged(nameof(EmailBorderBrush));
+            OnPropertyChanged(nameof(SiretBorderBrush));
+            OnPropertyChanged(nameof(PersonneInterrogeeBorderBrush));
+            OnPropertyChanged(nameof(FonctionBorderBrush));
+            OnPropertyChanged(nameof(EffectifRangeBorderBrush));
+            OnPropertyChanged(nameof(CsePvBorderBrush));
+            OnPropertyChanged(nameof(TransportTypeBorderBrush));
         }
 
         private static BitmapImage ByteArrayToImage(byte[] bytes)
