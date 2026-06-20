@@ -20,7 +20,7 @@ namespace FntrAudit.Viewmodels
     public class CreateClientViewModel : INotifyPropertyChanged
     {
         private const string ErrorBrush = "#C62828";
-        private const string DefaultBorderBrush = "#D0D0D0";
+        private const string DefaultBorderBrush = "#1F2937";
 
         public event PropertyChangedEventHandler? PropertyChanged;
         public event Action<bool>? RequestClose;
