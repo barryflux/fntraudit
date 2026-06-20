@@ -150,6 +150,19 @@ namespace FntrAudit.Views.Components
             set => SetValue(ShowSearchBoxProperty, value);
         }
 
+        public static readonly DependencyProperty ShowAddButtonProperty =
+            DependencyProperty.Register(
+                nameof(ShowAddButton),
+                typeof(bool),
+                typeof(EntityListView),
+                new PropertyMetadata(true));
+
+        public bool ShowAddButton
+        {
+            get => (bool)GetValue(ShowAddButtonProperty);
+            set => SetValue(ShowAddButtonProperty, value);
+        }
+
         public static readonly DependencyProperty AddButtonTextProperty =
             DependencyProperty.Register(
                 nameof(AddButtonText),
