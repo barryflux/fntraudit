@@ -10,7 +10,7 @@ using System.Windows.Media.Imaging;
 using FntrAudit.Helpers;
 using FntrAudit.Models;
 using FntrAudit.Services.Activites;
-using FntrAudit.Services.Logos;
+using FntrAudit.Services.LogoService;
 using FntrAudit.Viewmodels.Common;
 using FntrAudit.Views;
 
