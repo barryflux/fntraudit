@@ -19,7 +19,7 @@ namespace FntrAudit.Services.LogoService
             _dbContext = dbContext;
         }
 
-        public async Task<List<Logo>> GetLogoAsync(CancellationToken cancellationToken = default)
+        public async Task<List<Logo>> GetAllLogoAsync(CancellationToken cancellationToken = default)
         {
             var logos = await _dbContext.Logo
                 .AsNoTracking()              

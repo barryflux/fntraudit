@@ -9,6 +9,6 @@ namespace FntrAudit.Services.LogoService
 {
     public interface ILogoService
     {
-        Task<List<Logo>> GetLogoAsync(CancellationToken cancellationToken = default);
+        Task<List<Logo>> GetAllLogoAsync(CancellationToken cancellationToken = default);
     }
 }
