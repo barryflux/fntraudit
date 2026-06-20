@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using FntrAudit.Viewmodels;
 
@@ -11,8 +12,31 @@ namespace FntrAudit.Views
         {
             InitializeComponent();
             DataContext = viewModel;
+            Loaded += OnLoaded;
 
             viewModel.RequestClose += OnRequestClose;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            EnsureDefaultExpanderHeaderColor(this);
+        }
+
+        private void EnsureDefaultExpanderHeaderColor(DependencyObject parent)
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+
+                if (child is Expander expander &&
+                    BindingOperations.GetBindingBase(expander, FrameworkElement.TagProperty) == null &&
+                    expander.Tag == null)
+                {
+                    expander.Tag = "#1F2937";
+                }
+
+                EnsureDefaultExpanderHeaderColor(child);
+            }
         }
 
         private void OnRequestClose(bool dialogResult)
