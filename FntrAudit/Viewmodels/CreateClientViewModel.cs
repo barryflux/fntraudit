@@ -22,6 +22,7 @@ namespace FntrAudit.Viewmodels
 
         private readonly Client? _sourceClient;
         private readonly IActivityService _activityService;
+        private readonly RelayCommand<EntityRowViewModel> _activitySelectionChangedCommand;
 
         public bool IsEditMode => _sourceClient != null;
         public string DialogTitle => IsEditMode ? "Modifier un client" : "Créer un client";
@@ -42,6 +43,7 @@ namespace FntrAudit.Viewmodels
         public CreateClientViewModel(IActivityService activityService)
         {
             _activityService = activityService;
+            _activitySelectionChangedCommand = new RelayCommand<EntityRowViewModel>(ActivitySelectionChanged);
 
             SaveCommand = new RelayCommand(Save);
             CancelCommand = new RelayCommand(Cancel);
@@ -347,6 +349,24 @@ namespace FntrAudit.Viewmodels
             }
         }
 
+        private async void ActivitySelectionChanged(EntityRowViewModel? row)
+        {
+            if (row?.Item is not Activity activity)
+                return;
+
+            try
+            {
+                ErrorMessage = null;
+                await _activityService.UpdateActivityAsync(activity);
+                row.Subtitle = activity.isOk ? "Sélectionnée" : string.Empty;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Erreur lors de la sauvegarde de la sélection : {ex.Message}";
+                await LoadActivitiesAsync();
+            }
+        }
+
         private static bool IsValidEmail(string email)
         {
             try
@@ -372,7 +392,9 @@ namespace FntrAudit.Viewmodels
                 {
                     Item = activity,
                     Title = activity.intitule ?? "Activité",
-                    Subtitle = activity.isOk ? "Active" : string.Empty
+                    Subtitle = activity.isOk ? "Sélectionnée" : string.Empty,
+                    ShowSelectionCheckBox = true,
+                    SelectionChangedCommand = _activitySelectionChangedCommand
                 });
             }
         }
