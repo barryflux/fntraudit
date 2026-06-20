@@ -137,6 +137,32 @@ namespace FntrAudit.Views.Components
                 view.DeleteItemCommand = e.NewValue as ICommand;
         }
 
+        public static readonly DependencyProperty SelectionChangedCommandProperty =
+            DependencyProperty.Register(
+                nameof(SelectionChangedCommand),
+                typeof(ICommand),
+                typeof(EntityListView),
+                new PropertyMetadata(null));
+
+        public ICommand? SelectionChangedCommand
+        {
+            get => (ICommand?)GetValue(SelectionChangedCommandProperty);
+            set => SetValue(SelectionChangedCommandProperty, value);
+        }
+
+        public static readonly DependencyProperty ShowSelectionCheckBoxProperty =
+            DependencyProperty.Register(
+                nameof(ShowSelectionCheckBox),
+                typeof(bool),
+                typeof(EntityListView),
+                new PropertyMetadata(false));
+
+        public bool ShowSelectionCheckBox
+        {
+            get => (bool)GetValue(ShowSelectionCheckBoxProperty);
+            set => SetValue(ShowSelectionCheckBoxProperty, value);
+        }
+
         public static readonly DependencyProperty ShowSearchBoxProperty =
             DependencyProperty.Register(
                 nameof(ShowSearchBox),
