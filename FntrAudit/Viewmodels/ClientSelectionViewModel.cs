@@ -30,6 +30,8 @@ namespace FntrAudit.Viewmodels
                 ? "Sélection d'un client pour un nouvel audit"
                 : "Sélection d'un client pour une reprise d'audit";
 
+        public bool ShowAddButton => _mode == ClientSelectionMode.NewAudit;
+
         private EntityRowViewModel? _selectedRow;
         public EntityRowViewModel? SelectedRow
         {
@@ -88,7 +90,7 @@ namespace FntrAudit.Viewmodels
             _userSessionService = userSessionService;
             _mode = mode;
 
-            _addCommand = new RelayCommand(Add, () => !IsBusy);
+            _addCommand = new RelayCommand(Add, () => !IsBusy && ShowAddButton);
             _openCommand = new RelayCommand(Open, () => !IsBusy && SelectedRow?.Item is Client);
             _reloadCommand = new RelayCommand(() => _ = LoadAsync(), () => !IsBusy);
 
@@ -141,6 +143,9 @@ namespace FntrAudit.Viewmodels
 
         private void Add()
         {
+            if (!ShowAddButton)
+                return;
+
             AddRequested?.Invoke();
         }
 
