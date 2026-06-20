@@ -1,31 +1,80 @@
-# Métier FntrAudit
+# Domaine métier FntrAudit
 
 ## Client
 
-Une société auditée.
+Représente une société auditée.
+
+Un client peut avoir un audit en cours
+Si on fait un nouvel audit l'audit en cours va être écrasé 
 
 ## Audit
 
-Un audit appartient à un client.
+Un audit est réalisé pour un client.
+
+Un audit est composé de thèmes, sous-thèmes, questions et  peut êtredes questions liées.
 
 ## Thème
 
-Regroupe plusieurs sous-thèmes.
+Catégorie principale d'audit.
+
+Exemple :
+
+* Temps de travail
+* Santé sécurité
+* Représentation du personnel
 
 ## Sous-thème
 
-Regroupe plusieurs questions.
+Sous-catégorie d'un thème.
 
 ## Question
 
-Peut produire :
-- conformité
-- non conformité
-- préconisation
-- risque
+Élément de contrôle audité.
+
+Une question peut produire :
+
+* Conforme
+* Non conforme
+* Non applicable
+
+Une question peut contenir :
+
+* rappel juridique
+* risque
+* préconisation
+* commentaire
+
+une question paut avoir une question liée qui est accessible selon si l'on coche conforme ou non conforme
+
+## Question
+
+Élément de contrôle audité.
+
+Une question liée peut produire :
+
+* Conforme
+* Non conforme
+* Non applicable
+
+Une question peut contenir :
+
+* rappel juridique
+* risque
+* préconisation
+* commentaire
 
 ## Utilisateur
 
-- Admin
-- Juriste
-- Assistant
+Accède à l'application.
+
+Types possibles :
+
+* Administrateur
+* Juriste
+* Assistant
+
+## Activité
+
+Historique des actions réalisées dans l'application.
+
+Permet la traçabilité.
