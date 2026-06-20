@@ -6,7 +6,7 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using FntrAudit.Helpers;
 using FntrAudit.Models;
-using FntrAudit.Services.Logos;
+using FntrAudit.Services.LogoService;
 
 namespace FntrAudit.Viewmodels
 {
