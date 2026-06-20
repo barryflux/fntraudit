@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Net.Mail;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -10,9 +11,9 @@ using System.Windows.Media.Imaging;
 using FntrAudit.Helpers;
 using FntrAudit.Models;
 using FntrAudit.Services.Activites;
-using FntrAudit.Services.LogoService;
 using FntrAudit.Viewmodels.Common;
 using FntrAudit.Views;
+using Microsoft.Win32;
 
 namespace FntrAudit.Viewmodels
 {
@@ -23,7 +24,6 @@ namespace FntrAudit.Viewmodels
 
         private readonly Client? _sourceClient;
         private readonly IActivityService _activityService;
-        private readonly ILogoService _logoService;
         private readonly RelayCommand<EntityRowViewModel> _activitySelectionChangedCommand;
 
         public bool IsEditMode => _sourceClient != null;
@@ -42,10 +42,9 @@ namespace FntrAudit.Viewmodels
         public ICommand EditActivityCommand { get; }
         public ICommand DeleteActivityCommand { get; }
 
-        public CreateClientViewModel(IActivityService activityService, ILogoService logoService)
+        public CreateClientViewModel(IActivityService activityService)
         {
             _activityService = activityService;
-            _logoService = logoService;
             _activitySelectionChangedCommand = new RelayCommand<EntityRowViewModel>(ActivitySelectionChanged);
 
             SaveCommand = new RelayCommand(Save);
@@ -60,7 +59,7 @@ namespace FntrAudit.Viewmodels
             _ = LoadActivitiesAsync();
         }
 
-        public CreateClientViewModel(Client client, IActivityService activityService, ILogoService logoService) : this(activityService, logoService)
+        public CreateClientViewModel(Client client, IActivityService activityService) : this(activityService)
         {
             _sourceClient = client;
 
@@ -296,17 +295,21 @@ namespace FntrAudit.Viewmodels
             try
             {
                 ErrorMessage = null;
-                var dialogVm = new LogoSelectionDialogViewModel(_logoService);
-                var dialog = new LogoSelectionDialog(dialogVm)
+
+                var dialog = new OpenFileDialog
                 {
-                    Owner = Application.Current.MainWindow
+                    Title = "Choisir une image",
+                    Filter = "Images (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp|Tous les fichiers (*.*)|*.*",
+                    CheckFileExists = true,
+                    Multiselect = false
                 };
 
-                if (dialog.ShowDialog() != true || dialogVm.SelectedLogo?.Logolo == null)
+                if (dialog.ShowDialog() != true)
                     return;
 
-                LogoBytes = dialogVm.SelectedLogo.Logolo;
-                LogoPreview = ByteArrayToImage(dialogVm.SelectedLogo.Logolo);
+                var bytes = File.ReadAllBytes(dialog.FileName);
+                LogoBytes = bytes;
+                LogoPreview = ByteArrayToImage(bytes);
             }
             catch (Exception ex)
             {
