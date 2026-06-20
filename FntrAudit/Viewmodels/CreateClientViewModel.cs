@@ -3,13 +3,15 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Net.Mail;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using FntrAudit.Helpers;
 using FntrAudit.Models;
 using FntrAudit.Services.Activites;
-using FntrAudit.Services.Auth;
 using FntrAudit.Viewmodels.Common;
+using FntrAudit.Views;
 
 namespace FntrAudit.Viewmodels
 {
@@ -17,7 +19,6 @@ namespace FntrAudit.Viewmodels
     {
         public event PropertyChangedEventHandler? PropertyChanged;
         public event Action<bool>? RequestClose;
-        
 
         private readonly Client? _sourceClient;
         private readonly IActivityService _activityService;
@@ -40,15 +41,16 @@ namespace FntrAudit.Viewmodels
 
         public CreateClientViewModel(IActivityService activityService)
         {
+            _activityService = activityService;
+
             SaveCommand = new RelayCommand(Save);
             CancelCommand = new RelayCommand(Cancel);
             DeleteCommand = new RelayCommand(Delete, () => IsEditMode);
             AddActivityCommand = new RelayCommand(AddActivity);
             PickLogoCommand = new RelayCommand(PickLogo);
-            RemoveLogoCommand = new RelayCommand(RemoveLogo);         
+            RemoveLogoCommand = new RelayCommand(RemoveLogo);
             EditActivityCommand = new RelayCommand<EntityRowViewModel>(EditActivity);
             DeleteActivityCommand = new RelayCommand<EntityRowViewModel>(DeleteActivity);
-            _activityService = activityService;
 
             _ = LoadActivitiesAsync();
         }
@@ -96,214 +98,94 @@ namespace FntrAudit.Viewmodels
         }
 
         private string? _intitule;
-        public string? Intitule
-        {
-            get => _intitule;
-            set { _intitule = value; OnPropertyChanged(); }
-        }
+        public string? Intitule { get => _intitule; set { _intitule = value; OnPropertyChanged(); } }
 
         private string? _personneSollicitante;
-        public string? PersonneSollicitante
-        {
-            get => _personneSollicitante;
-            set { _personneSollicitante = value; OnPropertyChanged(); }
-        }
+        public string? PersonneSollicitante { get => _personneSollicitante; set { _personneSollicitante = value; OnPropertyChanged(); } }
 
         private string? _personneInterrogee;
-        public string? PersonneInterrogee
-        {
-            get => _personneInterrogee;
-            set { _personneInterrogee = value; OnPropertyChanged(); }
-        }
+        public string? PersonneInterrogee { get => _personneInterrogee; set { _personneInterrogee = value; OnPropertyChanged(); } }
 
         private string? _fonction;
-        public string? Fonction
-        {
-            get => _fonction;
-            set { _fonction = value; OnPropertyChanged(); }
-        }
+        public string? Fonction { get => _fonction; set { _fonction = value; OnPropertyChanged(); } }
 
         private string? _statut;
-        public string? Statut
-        {
-            get => _statut;
-            set { _statut = value; OnPropertyChanged(); }
-        }
+        public string? Statut { get => _statut; set { _statut = value; OnPropertyChanged(); } }
 
         private string? _capital;
-        public string? Capital
-        {
-            get => _capital;
-            set { _capital = value; OnPropertyChanged(); }
-        }
+        public string? Capital { get => _capital; set { _capital = value; OnPropertyChanged(); } }
 
         private string? _raisonSociale;
-        public string? RaisonSociale
-        {
-            get => _raisonSociale;
-            set { _raisonSociale = value; OnPropertyChanged(); }
-        }
+        public string? RaisonSociale { get => _raisonSociale; set { _raisonSociale = value; OnPropertyChanged(); } }
 
         private string? _siret;
-        public string? Siret
-        {
-            get => _siret;
-            set { _siret = value; OnPropertyChanged(); }
-        }
+        public string? Siret { get => _siret; set { _siret = value; OnPropertyChanged(); } }
 
         private string? _adresse;
-        public string? Adresse
-        {
-            get => _adresse;
-            set { _adresse = value; OnPropertyChanged(); }
-        }
+        public string? Adresse { get => _adresse; set { _adresse = value; OnPropertyChanged(); } }
 
         private string? _naf;
-        public string? Naf
-        {
-            get => _naf;
-            set { _naf = value; OnPropertyChanged(); }
-        }
+        public string? Naf { get => _naf; set { _naf = value; OnPropertyChanged(); } }
 
         private string? _formeJuridique;
-        public string? FormeJuridique
-        {
-            get => _formeJuridique;
-            set { _formeJuridique = value; OnPropertyChanged(); }
-        }
+        public string? FormeJuridique { get => _formeJuridique; set { _formeJuridique = value; OnPropertyChanged(); } }
 
         private string? _caAnnuel;
-        public string? CaAnnuel
-        {
-            get => _caAnnuel;
-            set { _caAnnuel = value; OnPropertyChanged(); }
-        }
+        public string? CaAnnuel { get => _caAnnuel; set { _caAnnuel = value; OnPropertyChanged(); } }
 
         private string? _historique;
-        public string? Historique
-        {
-            get => _historique;
-            set { _historique = value; OnPropertyChanged(); }
-        }
+        public string? Historique { get => _historique; set { _historique = value; OnPropertyChanged(); } }
 
         private string? _etabSecondaire;
-        public string? EtabSecondaire
-        {
-            get => _etabSecondaire;
-            set { _etabSecondaire = value; OnPropertyChanged(); }
-        }
+        public string? EtabSecondaire { get => _etabSecondaire; set { _etabSecondaire = value; OnPropertyChanged(); } }
 
         private string? _effectif;
-        public string? Effectif
-        {
-            get => _effectif;
-            set { _effectif = value; OnPropertyChanged(); }
-        }
+        public string? Effectif { get => _effectif; set { _effectif = value; OnPropertyChanged(); } }
 
         private string? _nombreLicence;
-        public string? NombreLicence
-        {
-            get => _nombreLicence;
-            set { _nombreLicence = value; OnPropertyChanged(); }
-        }
+        public string? NombreLicence { get => _nombreLicence; set { _nombreLicence = value; OnPropertyChanged(); } }
 
         private string? _nbreVehiculeMoteur;
-        public string? NbreVehiculeMoteur
-        {
-            get => _nbreVehiculeMoteur;
-            set { _nbreVehiculeMoteur = value; OnPropertyChanged(); }
-        }
+        public string? NbreVehiculeMoteur { get => _nbreVehiculeMoteur; set { _nbreVehiculeMoteur = value; OnPropertyChanged(); } }
 
         private string? _email;
-        public string? Email
-        {
-            get => _email;
-            set { _email = value; OnPropertyChanged(); }
-        }
+        public string? Email { get => _email; set { _email = value; OnPropertyChanged(); } }
 
         private bool _has1SalOrMore;
-        public bool Has1SalOrMore
-        {
-            get => _has1SalOrMore;
-            set { _has1SalOrMore = value; OnPropertyChanged(); }
-        }
+        public bool Has1SalOrMore { get => _has1SalOrMore; set { _has1SalOrMore = value; OnPropertyChanged(); } }
 
         private bool _has11SalOrMore;
-        public bool Has11SalOrMore
-        {
-            get => _has11SalOrMore;
-            set { _has11SalOrMore = value; OnPropertyChanged(); }
-        }
+        public bool Has11SalOrMore { get => _has11SalOrMore; set { _has11SalOrMore = value; OnPropertyChanged(); } }
 
         private bool _has50SalOrMore;
-        public bool Has50SalOrMore
-        {
-            get => _has50SalOrMore;
-            set { _has50SalOrMore = value; OnPropertyChanged(); }
-        }
+        public bool Has50SalOrMore { get => _has50SalOrMore; set { _has50SalOrMore = value; OnPropertyChanged(); } }
 
         private bool _has300SalOrMore;
-        public bool Has300SalOrMore
-        {
-            get => _has300SalOrMore;
-            set { _has300SalOrMore = value; OnPropertyChanged(); }
-        }
+        public bool Has300SalOrMore { get => _has300SalOrMore; set { _has300SalOrMore = value; OnPropertyChanged(); } }
 
         private bool _has1000SalOrMore;
-        public bool Has1000SalOrMore
-        {
-            get => _has1000SalOrMore;
-            set { _has1000SalOrMore = value; OnPropertyChanged(); }
-        }
+        public bool Has1000SalOrMore { get => _has1000SalOrMore; set { _has1000SalOrMore = value; OnPropertyChanged(); } }
 
         private bool _pvCarence;
-        public bool PvCarence
-        {
-            get => _pvCarence;
-            set { _pvCarence = value; OnPropertyChanged(); }
-        }
+        public bool PvCarence { get => _pvCarence; set { _pvCarence = value; OnPropertyChanged(); } }
 
         private bool _cse;
-        public bool Cse
-        {
-            get => _cse;
-            set { _cse = value; OnPropertyChanged(); }
-        }
+        public bool Cse { get => _cse; set { _cse = value; OnPropertyChanged(); } }
 
         private bool _isVoyageur;
-        public bool IsVoyageur
-        {
-            get => _isVoyageur;
-            set { _isVoyageur = value; OnPropertyChanged(); }
-        }
+        public bool IsVoyageur { get => _isVoyageur; set { _isVoyageur = value; OnPropertyChanged(); } }
 
         private bool _isTransport;
-        public bool IsTransport
-        {
-            get => _isTransport;
-            set { _isTransport = value; OnPropertyChanged(); }
-        }
+        public bool IsTransport { get => _isTransport; set { _isTransport = value; OnPropertyChanged(); } }
 
         private BitmapImage? _logoPreview;
-        public BitmapImage? LogoPreview
-        {
-            get => _logoPreview;
-            set { _logoPreview = value; OnPropertyChanged(); }
-        }
+        public BitmapImage? LogoPreview { get => _logoPreview; set { _logoPreview = value; OnPropertyChanged(); } }
 
         private byte[]? _logoBytes;
-        public byte[]? LogoBytes
-        {
-            get => _logoBytes;
-            set { _logoBytes = value; OnPropertyChanged(); }
-        }
+        public byte[]? LogoBytes { get => _logoBytes; set { _logoBytes = value; OnPropertyChanged(); } }
 
         private string? _errorMessage;
-        public string? ErrorMessage
-        {
-            get => _errorMessage;
-            set { _errorMessage = value; OnPropertyChanged(); }
-        }
+        public string? ErrorMessage { get => _errorMessage; set { _errorMessage = value; OnPropertyChanged(); } }
 
         public bool Validate()
         {
@@ -351,13 +233,11 @@ namespace FntrAudit.Viewmodels
             client.isVoyageur = IsVoyageur;
             client.isTransport = IsTransport;
             client.email = Email?.Trim();
-
             client.has1SalOrMore = Has1SalOrMore;
             client.has11SalOrMore = Has11SalOrMore;
             client.has50SalOrMore = Has50SalOrMore;
             client.has300SalOrMore = Has300SalOrMore;
             client.has1000SalOrMore = Has1000SalOrMore;
-
             client.picture = LogoBytes;
 
             return client;
@@ -371,19 +251,31 @@ namespace FntrAudit.Viewmodels
             RequestClose?.Invoke(true);
         }
 
-        private void Cancel()
-        {
-            RequestClose?.Invoke(false);
-        }
+        private void Cancel() => RequestClose?.Invoke(false);
 
-        private void Delete()
-        {
-            RequestClose?.Invoke(true);
-        }
+        private void Delete() => RequestClose?.Invoke(true);
 
-        private void AddActivity()
+        private async void AddActivity()
         {
-            Activities.Add(new ClientActivityRowViewModel());
+            try
+            {
+                ErrorMessage = null;
+                var dialogVm = new ActivityEditDialogViewModel();
+                var dialog = new ActivityEditDialog(dialogVm)
+                {
+                    Owner = Application.Current.MainWindow
+                };
+
+                if (dialog.ShowDialog() != true)
+                    return;
+
+                await _activityService.AddActivityAsync(dialogVm.BuildActivity());
+                await LoadActivitiesAsync();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Erreur lors de l'ajout de l'activité : {ex.Message}";
+            }
         }
 
         public void DeleteActivity(ClientActivityRowViewModel? activity)
@@ -404,22 +296,55 @@ namespace FntrAudit.Viewmodels
             LogoBytes = null;
             LogoPreview = null;
         }
-        
 
-        private void EditActivity(EntityRowViewModel? activity)
+        private async void EditActivity(EntityRowViewModel? row)
         {
-            if (activity == null)
+            if (row?.Item is not Activity activity)
                 return;
 
-            // ouvrir ta modal d'édition plus tard
+            try
+            {
+                ErrorMessage = null;
+                var dialogVm = new ActivityEditDialogViewModel(activity);
+                var dialog = new ActivityEditDialog(dialogVm)
+                {
+                    Owner = Application.Current.MainWindow
+                };
+
+                if (dialog.ShowDialog() != true)
+                    return;
+
+                await _activityService.UpdateActivityAsync(dialogVm.BuildActivity());
+                await LoadActivitiesAsync();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Erreur lors de la modification de l'activité : {ex.Message}";
+            }
         }
 
-        private void DeleteActivity(EntityRowViewModel? activity)
+        private async void DeleteActivity(EntityRowViewModel? row)
         {
-            if (activity == null)
+            if (row?.Item is not Activity activity)
                 return;
 
-            ActivityItems.Remove(activity);
+            bool confirmed = DeleteConfirmationDialog.Confirm(
+                Application.Current.MainWindow,
+                $"Supprimer l'activité '{activity.intitule}' ?");
+
+            if (!confirmed)
+                return;
+
+            try
+            {
+                ErrorMessage = null;
+                await _activityService.DeleteActivityAsync(activity.id);
+                await LoadActivitiesAsync();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Erreur lors de la suppression de l'activité : {ex.Message}";
+            }
         }
 
         private static bool IsValidEmail(string email)
@@ -434,6 +359,7 @@ namespace FntrAudit.Viewmodels
                 return false;
             }
         }
+
         private async Task LoadActivitiesAsync()
         {
             ActivityItems.Clear();
@@ -444,9 +370,9 @@ namespace FntrAudit.Viewmodels
             {
                 ActivityItems.Add(new EntityRowViewModel
                 {
-                    Item = activity.id,
-                    Title = activity.intitule,
-                    Subtitle = ""
+                    Item = activity,
+                    Title = activity.intitule ?? "Activité",
+                    Subtitle = activity.isOk ? "Active" : string.Empty
                 });
             }
         }
