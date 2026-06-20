@@ -49,7 +49,7 @@
                                         Margin="0,0,12,12"
                                         Padding="8"
                                         Style="{StaticResource MaterialDesignOutlinedButton}"
-                                        Command="{Binding DataContext.SelectLogoCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        Command="{Binding DataContext.SelectLogoCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                                         CommandParameter="{Binding}">
                                     <StackPanel>
                                         <Border Height="95"
