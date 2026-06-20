@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using FntrAudit.Helpers;
+using FntrAudit.Services.Activites;
 using FntrAudit.Services.Auth;
 using FntrAudit.Services.Clients;
 using FntrAudit.Viewmodels.Navigation;
@@ -90,12 +91,13 @@ namespace FntrAudit.Viewmodels
         {
             var clientService = App.AppHost.Services.GetRequiredService<IClientService>();
             var userSessionService = App.AppHost.Services.GetRequiredService<IUserSessionService>();
+            var activityService = App.AppHost.Services.GetRequiredService<IActivityService>();
 
             var vm = new ClientSelectionViewModel(clientService, userSessionService, mode);
 
             vm.AddRequested += () =>
             {
-                var dialogVm = new CreateClientViewModel();
+                var dialogVm = new CreateClientViewModel(activityService);
                 var dialog = new Views.ClientEditDialog(dialogVm)
                 {
                     Owner = Application.Current.MainWindow
@@ -123,7 +125,7 @@ namespace FntrAudit.Viewmodels
 
             vm.ClientSelected += client =>
             {
-                var dialogVm = new CreateClientViewModel(client);
+                var dialogVm = new CreateClientViewModel(client, activityService);
                 var dialog = new Views.ClientEditDialog(dialogVm)
                 {
                     Owner = Application.Current.MainWindow
