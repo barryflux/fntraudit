@@ -1,0 +1,106 @@
+﻿<Window x:Class="FntrAudit.Views.UserEditDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="{Binding DialogTitle}"
+        Height="760"
+        Width="560"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FntrAudit.Views"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStyle="SingleBorderWindow">
+    
+    <Grid Background="#F5F5F5">
+        <materialDesign:Card Margin="20"
+                             Padding="24"
+                             VerticalAlignment="Center"
+                             materialDesign:ShadowAssist.ShadowDepth="Depth2">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0"
+                           Text="{Binding DialogTitle}"
+                           FontSize="22"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,20"/>
+
+                <ScrollViewer Grid.Row="1"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+
+                        <TextBox Margin="0,0,0,12"
+                                 Text="{Binding Nom, UpdateSourceTrigger=PropertyChanged}"
+                                 materialDesign:HintAssist.Hint="Nom"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <TextBox Margin="0,0,0,12"
+                                 Text="{Binding Prenom, UpdateSourceTrigger=PropertyChanged}"
+                                 materialDesign:HintAssist.Hint="Prénom"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <ComboBox Margin="0,0,0,12"
+                                  ItemsSource="{Binding Roles}"
+                                  SelectedItem="{Binding SelectedRole, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  DisplayMemberPath="Label"
+                                  materialDesign:HintAssist.Hint="Rôle"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}" />
+
+                        <TextBox Margin="0,0,0,12"
+                                 Text="{Binding Mail, UpdateSourceTrigger=PropertyChanged}"
+                                 materialDesign:HintAssist.Hint="Mail"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <TextBox Margin="0,0,0,12"
+                                 Text="{Binding Titre1, UpdateSourceTrigger=PropertyChanged}"
+                                 materialDesign:HintAssist.Hint="Titre 1"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <TextBox Margin="0,0,0,12"
+                                 Text="{Binding Titre2, UpdateSourceTrigger=PropertyChanged}"
+                                 materialDesign:HintAssist.Hint="Titre 2"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <TextBox Margin="0,0,0,12"
+                                 Text="{Binding Titre3, UpdateSourceTrigger=PropertyChanged}"
+                                 materialDesign:HintAssist.Hint="Titre 3"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <TextBox Margin="0,0,0,12"
+                                 Text="{Binding Titre4, UpdateSourceTrigger=PropertyChanged}"
+                                 materialDesign:HintAssist.Hint="Titre 4"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   Foreground="#C62828"
+                                   TextWrapping="Wrap"
+                                   Margin="0,8,0,0"/>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <UniformGrid Grid.Row="2"
+                             Columns="2"
+                             Margin="0,20,0,0">
+                    <Button Content="Annuler"
+                            Margin="0,0,8,0"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Click="Cancel_Click"/>
+
+                    <Button Content="Valider"
+                            Margin="8,0,0,0"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Click="Save_Click"
+                            IsEnabled="{Binding IsValid}"/>
+                </UniformGrid>
+            </Grid>
+        </materialDesign:Card>
+    </Grid>
+</Window>

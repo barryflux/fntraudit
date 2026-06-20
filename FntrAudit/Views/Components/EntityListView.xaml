@@ -1,0 +1,132 @@
+﻿<UserControl x:Class="FntrAudit.Views.Components.EntityListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:helpers="clr-namespace:FntrAudit.Helpers"
+             xmlns:components="clr-namespace:FntrAudit.Views.Components"
+             mc:Ignorable="d"
+             d:DesignHeight="500"
+             d:DesignWidth="900">
+
+    <UserControl.Resources>
+        <helpers:StringNullOrEmptyToVisibilityConverter x:Key="StringNullOrEmptyToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Barre de recherche -->
+        <TextBox Grid.Row="0"
+                 Margin="0,0,0,12"
+                 Text="{Binding SearchText, RelativeSource={RelativeSource AncestorType={x:Type components:EntityListView}}, UpdateSourceTrigger=PropertyChanged}"
+                 materialDesign:HintAssist.Hint="Rechercher..."
+                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                 Visibility="{Binding ShowSearchBox, RelativeSource={RelativeSource AncestorType={x:Type components:EntityListView}}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <!-- Compteur -->
+        <TextBlock Grid.Row="1"
+                   Margin="0,0,0,12"
+                   VerticalAlignment="Top"
+                   Foreground="Gray"
+                   FontSize="14"
+                   Text="{Binding FilteredItemsCount, RelativeSource={RelativeSource AncestorType={x:Type components:EntityListView}}, StringFormat={}{0} élément(s)}" />
+
+        <!-- Liste -->
+        <ListBox Grid.Row="2"
+                 ItemsSource="{Binding FilteredItemsSource, RelativeSource={RelativeSource AncestorType={x:Type components:EntityListView}}}"
+                 SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType={x:Type components:EntityListView}}, Mode=TwoWay}"
+                 BorderThickness="0"
+                 Background="Transparent"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                 HorizontalContentAlignment="Stretch">
+
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Margin" Value="0,0,0,10"/>
+                    <Setter Property="IsEnabled" Value="{Binding IsEnabled}"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <materialDesign:Card Padding="16"
+                                         Margin="0,0,0,8"
+                                         materialDesign:ShadowAssist.ShadowDepth="Depth1">
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0"
+                                        VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Title}"
+                                           FontSize="16"
+                                           FontWeight="SemiBold"
+                                           Foreground="Black"
+                                           TextWrapping="Wrap"/>
+
+                                <TextBlock Text="{Binding Subtitle}"
+                                           Margin="0,4,0,0"
+                                           Opacity="0.7"
+                                           Foreground="Gray"
+                                           Visibility="{Binding Subtitle, Converter={StaticResource StringNullOrEmptyToVisibilityConverter}}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1"
+                                        Orientation="Horizontal"
+                                        VerticalAlignment="Center"
+                                        Margin="12,0,0,0">
+
+                                <Button Margin="0,0,8,0"
+                                        Padding="10,6"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                                        Command="{Binding EditItemCommand, RelativeSource={RelativeSource AncestorType={x:Type components:EntityListView}}}"
+                                        CommandParameter="{Binding}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Pencil" Width="16" Height="16" Margin="0,0,6,0"/>
+                                        <TextBlock Text="Modifier"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Button Padding="10,6"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                                        Command="{Binding DeleteItemCommand, RelativeSource={RelativeSource AncestorType={x:Type components:EntityListView}}}"
+                                        CommandParameter="{Binding}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Delete" Width="16" Height="16" Margin="0,0,6,0"/>
+                                        <TextBlock Text="Supprimer"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </materialDesign:Card>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- Footer -->
+        <DockPanel Grid.Row="3" Margin="0,12,0,0">
+            <Button DockPanel.Dock="Right"
+                    Padding="14,8"
+                    HorizontalAlignment="Right"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    Command="{Binding AddCommand, RelativeSource={RelativeSource AncestorType={x:Type components:EntityListView}}}">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Plus" Width="18" Height="18" Margin="0,0,8,0"/>
+                    <TextBlock Text="Ajouter"/>
+                </StackPanel>
+            </Button>
+        </DockPanel>
+    </Grid>
+</UserControl>

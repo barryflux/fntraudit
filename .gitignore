@@ -1,0 +1,137 @@
+# =========================
+# Build Results
+# =========================
+
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# =========================
+# Visual Studio
+# =========================
+
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# =========================
+# Visual Studio Code
+# =========================
+
+.vscode/
+
+# =========================
+# JetBrains Rider
+# =========================
+
+.idea/
+*.sln.iml
+
+# =========================
+# NuGet
+# =========================
+
+packages/
+*.nupkg
+
+# Restore files
+project.assets.json
+project.nuget.cache
+
+# =========================
+# Publish
+# =========================
+
+publish/
+Publish/
+
+# =========================
+# Test Results
+# =========================
+
+TestResults/
+*.trx
+
+# =========================
+# Resharper
+# =========================
+
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# =========================
+# DotCover
+# =========================
+
+*.dotCover
+
+# =========================
+# BenchmarkDotNet
+# =========================
+
+BenchmarkDotNet.Artifacts/
+
+# =========================
+# Azure
+# =========================
+
+PublishScripts/
+
+# =========================
+# Windows
+# =========================
+
+Thumbs.db
+Desktop.ini
+
+# =========================
+# Temporary Files
+# =========================
+
+*.tmp
+*.temp
+*.cache
+
+# =========================
+# Generated Files
+# =========================
+
+Generated Files/
+
+# =========================
+# WPF Generated Files
+# =========================
+
+*.g.cs
+*.g.i.cs
+*.baml
+
+# =========================
+# Local Configuration
+# =========================
+
+appsettings.Development.json
+secrets.json
+
+# =========================
+# SQLite
+# =========================
+
+*.db-wal
+*.db-shm
+
+# =========================
+# Logs
+# =========================
+
+*.log
+
+# =========================
+# OS Files
+# =========================
+
+.DS_Store

@@ -1,0 +1,155 @@
+﻿<Window x:Class="FntrAudit.Views.MainMenu"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:helpers="clr-namespace:FntrAudit.Helpers"
+        mc:Ignorable="d"
+        Title="Main menu"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        WindowStyle="SingleBorderWindow"
+        AllowsTransparency="False"
+        ResizeMode="CanResize"
+        ShowInTaskbar="True">
+
+    <Window.Resources>
+        
+        <helpers:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter"
+                                           ExpandedWidth="260"
+                                           CollapsedWidth="70"/>
+
+        <helpers:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+    </Window.Resources>
+
+    <Grid Background="#F5F5F5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="64"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- BARRE DU HAUT -->
+        <Border Grid.Row="0" Background="#AE1439">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="{Binding IsMenuCollapsed, Converter={StaticResource BoolToGridLengthConverter}}"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <DockPanel Grid.Column="0" LastChildFill="True" Margin="12,0">
+                    <Button Width="40"
+                            Height="40"
+                            VerticalAlignment="Center"
+                            Command="{Binding ToggleMenuCommand}"
+                            Style="{StaticResource MaterialDesignToolButton}">
+                        <materialDesign:PackIcon Kind="Menu" Width="24" Height="24" Foreground="White"/>
+                    </Button>
+
+                    <TextBlock Text="FntrAudit"
+                               Foreground="White"
+                               FontSize="22"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"
+                               Margin="12,0,0,0"
+                               Visibility="{Binding IsMenuCollapsed, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                </DockPanel>
+
+                <TextBlock Grid.Column="1"
+                           Text="Menu principal"
+                           Foreground="White"
+                           FontSize="18"
+                           VerticalAlignment="Center"
+                           Margin="20,0,0,0"/>
+            </Grid>
+        </Border>
+
+        <!-- ZONE PRINCIPALE -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding IsMenuCollapsed, Converter={StaticResource BoolToGridLengthConverter}}"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- MENU GAUCHE -->
+            <Border Grid.Column="0"
+                    Background="White"
+                    BorderBrush="#DDDDDD"
+                    BorderThickness="0,0,1,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10">
+
+                        <!-- Administration -->
+                        <Expander IsExpanded="{Binding MenuItems[0].IsExpanded}"
+                                  Margin="0,0,0,8">
+                            <Expander.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="ShieldCrownOutline"
+                                                             Width="20"
+                                                             Height="20"
+                                                             Margin="0,0,12,0"/>
+                                    <TextBlock Text="Administration"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"
+                                               Visibility="{Binding IsMenuCollapsed, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                                </StackPanel>
+                            </Expander.Header>
+
+                            <StackPanel Margin="12,8,0,0"
+                                        Visibility="{Binding IsMenuCollapsed, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                                <Button Content="Audit"
+                                        Command="{Binding MenuItems[0].Children[0].SelectCommand}"
+                                        Height="40"
+                                        Margin="0,0,0,8"
+                                        Style="{StaticResource MaterialDesignFlatButton}"/>
+
+                                <Button Content="Personnel"
+                                        Command="{Binding MenuItems[0].Children[1].SelectCommand}"
+                                        Height="40"
+                                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                            </StackPanel>
+                        </Expander>
+
+                        <!-- Nouvel Audit -->
+                        <Button Command="{Binding MenuItems[1].SelectCommand}"
+                                Height="48"
+                                Margin="0,0,0,8"
+                                Style="{StaticResource MaterialDesignFlatButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="FileDocumentEditOutline"
+                                                         Width="20"
+                                                         Height="20"
+                                                         Margin="0,0,12,0"/>
+                                <TextBlock Text="Nouvel Audit"
+                                           Visibility="{Binding IsMenuCollapsed, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Reprise Audit -->
+                        <Button Command="{Binding MenuItems[2].SelectCommand}"
+                                Height="48"
+                                Style="{StaticResource MaterialDesignFlatButton}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="FolderRefreshOutline"
+                                                         Width="20"
+                                                         Height="20"
+                                                         Margin="0,0,12,0"/>
+                                <TextBlock Text="Reprise d'audit"
+                                           Visibility="{Binding IsMenuCollapsed, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                            </StackPanel>
+                        </Button>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- CONTENU -->
+            <Grid Grid.Column="1" Margin="20">
+                <materialDesign:Card Padding="20"
+                                     materialDesign:ShadowAssist.ShadowDepth="Depth2">
+                    <ContentControl Content="{Binding CurrentView}"/>
+                </materialDesign:Card>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
