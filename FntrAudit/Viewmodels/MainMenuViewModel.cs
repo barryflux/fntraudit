@@ -95,60 +95,42 @@ namespace FntrAudit.Viewmodels
 
             var vm = new ClientSelectionViewModel(clientService, userSessionService, mode);
 
-            vm.AddRequested += () =>
+            vm.AddRequested += async () =>
             {
-                var dialogVm = new CreateClientViewModel(activityService);
+                var societeId = userSessionService.CurrentUser?.societeUser_Id;
+                if (societeId == null)
+                {
+                    vm.ErrorMessage = "Aucune société utilisateur n'est disponible.";
+                    return;
+                }
+
+                var dialogVm = new CreateClientViewModel(activityService, clientService, societeId.Value);
                 var dialog = new Views.ClientEditDialog(dialogVm)
                 {
                     Owner = Application.Current.MainWindow
                 };
 
-                var result = dialog.ShowDialog();
-                if (result == true)
-                {
-                    var currentUser = userSessionService.CurrentUser;
-                    if (currentUser?.societeUser_Id != null)
-                    {
-                        var client = dialogVm.BuildClient(currentUser.societeUser_Id.Value);
-
-                        _ = Task.Run(async () =>
-                        {
-                            await clientService.AddClientAsync(client);
-                            await Application.Current.Dispatcher.InvokeAsync(async () =>
-                            {
-                                await vm.LoadAsync();
-                            });
-                        });
-                    }
-                }
+                if (dialog.ShowDialog() == true)
+                    await vm.LoadAsync();
             };
 
-            vm.ClientSelected += client =>
+            vm.ClientSelected += async client =>
             {
-                var dialogVm = new CreateClientViewModel(client, activityService);
+                var societeId = userSessionService.CurrentUser?.societeUser_Id;
+                if (societeId == null)
+                {
+                    vm.ErrorMessage = "Aucune société utilisateur n'est disponible.";
+                    return;
+                }
+
+                var dialogVm = new CreateClientViewModel(client, activityService, clientService, societeId.Value);
                 var dialog = new Views.ClientEditDialog(dialogVm)
                 {
                     Owner = Application.Current.MainWindow
                 };
 
-                var result = dialog.ShowDialog();
-                if (result == true)
-                {
-                    var currentUser = userSessionService.CurrentUser;
-                    if (currentUser?.societeUser_Id != null)
-                    {
-                        var updatedClient = dialogVm.BuildClient(currentUser.societeUser_Id.Value);
-
-                        _ = Task.Run(async () =>
-                        {
-                            await clientService.UpdateClientAsync(updatedClient);
-                            await Application.Current.Dispatcher.InvokeAsync(async () =>
-                            {
-                                await vm.LoadAsync();
-                            });
-                        });
-                    }
-                }
+                if (dialog.ShowDialog() == true)
+                    await vm.LoadAsync();
             };
 
             return new Views.ClientSelectionView(vm);
