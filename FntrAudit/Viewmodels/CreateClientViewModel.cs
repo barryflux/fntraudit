@@ -631,10 +631,9 @@ namespace FntrAudit.Viewmodels
 
         private string BuildActivitiesJson()
         {
-            var selectedActivities = ActivityItems
+            var activities = ActivityItems
                 .Select(row => row.Item)
                 .OfType<Activity>()
-                .Where(activity => activity.isOk)
                 .Select(activity => new
                 {
                     id = activity.id,
@@ -644,7 +643,7 @@ namespace FntrAudit.Viewmodels
                 })
                 .ToList();
 
-            return JsonSerializer.Serialize(selectedActivities);
+            return JsonSerializer.Serialize(activities);
         }
 
         private void SetEffectifRange(string selectedProperty, bool value)
