@@ -11,6 +11,7 @@ using System.Windows.Media.Imaging;
 using FntrAudit.Helpers;
 using FntrAudit.Models;
 using FntrAudit.Services.Activites;
+using FntrAudit.Services.Clients;
 using FntrAudit.Viewmodels.Common;
 using FntrAudit.Views;
 using Microsoft.Win32;
@@ -27,7 +28,11 @@ namespace FntrAudit.Viewmodels
 
         private readonly Client? _sourceClient;
         private readonly IActivityService _activityService;
+        private readonly IClientService _clientService;
+        private readonly int _societeId;
         private readonly RelayCommand<EntityRowViewModel> _activitySelectionChangedCommand;
+        private readonly RelayCommand _saveCommand;
+        private readonly RelayCommand _deleteCommand;
         private bool _validationRequested;
 
         public bool IsEditMode => _sourceClient != null;
@@ -37,33 +42,42 @@ namespace FntrAudit.Viewmodels
         public ObservableCollection<ClientActivityRowViewModel> Activities { get; } = new();
         public ObservableCollection<EntityRowViewModel> ActivityItems { get; } = new();
 
-        public ICommand SaveCommand { get; }
+        public ICommand SaveCommand => _saveCommand;
         public ICommand CancelCommand { get; }
-        public ICommand DeleteCommand { get; }
+        public ICommand DeleteCommand => _deleteCommand;
         public ICommand AddActivityCommand { get; }
         public ICommand PickLogoCommand { get; }
         public ICommand RemoveLogoCommand { get; }
         public ICommand EditActivityCommand { get; }
         public ICommand DeleteActivityCommand { get; }
 
-        public CreateClientViewModel(IActivityService activityService)
+        public CreateClientViewModel(
+            IActivityService activityService,
+            IClientService clientService,
+            int societeId)
         {
             _activityService = activityService;
+            _clientService = clientService;
+            _societeId = societeId;
             _activitySelectionChangedCommand = new RelayCommand<EntityRowViewModel>(ActivitySelectionChanged);
 
-            SaveCommand = new RelayCommand(Save);
-            CancelCommand = new RelayCommand(Cancel);
-            DeleteCommand = new RelayCommand(Delete, () => IsEditMode);
-            AddActivityCommand = new RelayCommand(AddActivity);
-            PickLogoCommand = new RelayCommand(PickLogo);
-            RemoveLogoCommand = new RelayCommand(RemoveLogo);
+            _saveCommand = new RelayCommand(Save, () => !IsSaving);
+            _deleteCommand = new RelayCommand(Delete, () => IsEditMode && !IsSaving);
+            CancelCommand = new RelayCommand(Cancel, () => !IsSaving);
+            AddActivityCommand = new RelayCommand(AddActivity, () => !IsSaving);
+            PickLogoCommand = new RelayCommand(PickLogo, () => !IsSaving);
+            RemoveLogoCommand = new RelayCommand(RemoveLogo, () => !IsSaving);
             EditActivityCommand = new RelayCommand<EntityRowViewModel>(EditActivity);
             DeleteActivityCommand = new RelayCommand<EntityRowViewModel>(DeleteActivity);
 
             _ = LoadActivitiesAsync();
         }
 
-        public CreateClientViewModel(Client client, IActivityService activityService) : this(activityService)
+        public CreateClientViewModel(
+            Client client,
+            IActivityService activityService,
+            IClientService clientService,
+            int societeId) : this(activityService, clientService, societeId)
         {
             _sourceClient = client;
 
@@ -104,6 +118,22 @@ namespace FntrAudit.Viewmodels
 
             Activities.Clear();
         }
+
+        private bool _isSaving;
+        public bool IsSaving
+        {
+            get => _isSaving;
+            set
+            {
+                if (_isSaving == value) return;
+                _isSaving = value;
+                OnPropertyChanged();
+                _saveCommand.RaiseCanExecuteChanged();
+                _deleteCommand.RaiseCanExecuteChanged();
+            }
+        }
+
+        public string SaveButtonText => IsSaving ? "Enregistrement..." : "Enregistrer";
 
         private string? _intitule;
         public string? Intitule
@@ -205,31 +235,91 @@ namespace FntrAudit.Viewmodels
         }
 
         private bool _has1SalOrMore;
-        public bool Has1SalOrMore { get => _has1SalOrMore; set { _has1SalOrMore = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
+        public bool Has1SalOrMore { get => _has1SalOrMore; set { SetEffectifRange(nameof(Has1SalOrMore), value); } }
 
         private bool _has11SalOrMore;
-        public bool Has11SalOrMore { get => _has11SalOrMore; set { _has11SalOrMore = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
+        public bool Has11SalOrMore { get => _has11SalOrMore; set { SetEffectifRange(nameof(Has11SalOrMore), value); } }
 
         private bool _has50SalOrMore;
-        public bool Has50SalOrMore { get => _has50SalOrMore; set { _has50SalOrMore = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
+        public bool Has50SalOrMore { get => _has50SalOrMore; set { SetEffectifRange(nameof(Has50SalOrMore), value); } }
 
         private bool _has300SalOrMore;
-        public bool Has300SalOrMore { get => _has300SalOrMore; set { _has300SalOrMore = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
+        public bool Has300SalOrMore { get => _has300SalOrMore; set { SetEffectifRange(nameof(Has300SalOrMore), value); } }
 
         private bool _has1000SalOrMore;
-        public bool Has1000SalOrMore { get => _has1000SalOrMore; set { _has1000SalOrMore = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
+        public bool Has1000SalOrMore { get => _has1000SalOrMore; set { SetEffectifRange(nameof(Has1000SalOrMore), value); } }
 
         private bool _pvCarence;
-        public bool PvCarence { get => _pvCarence; set { _pvCarence = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
+        public bool PvCarence
+        {
+            get => _pvCarence;
+            set
+            {
+                if (_pvCarence == value) return;
+                _pvCarence = value;
+                if (value && _cse)
+                {
+                    _cse = false;
+                    OnPropertyChanged(nameof(Cse));
+                }
+                OnPropertyChanged();
+                NotifyValidationPropertiesChanged();
+            }
+        }
 
         private bool _cse;
-        public bool Cse { get => _cse; set { _cse = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
+        public bool Cse
+        {
+            get => _cse;
+            set
+            {
+                if (_cse == value) return;
+                _cse = value;
+                if (value && _pvCarence)
+                {
+                    _pvCarence = false;
+                    OnPropertyChanged(nameof(PvCarence));
+                }
+                OnPropertyChanged();
+                NotifyValidationPropertiesChanged();
+            }
+        }
 
         private bool _isVoyageur;
-        public bool IsVoyageur { get => _isVoyageur; set { _isVoyageur = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
+        public bool IsVoyageur
+        {
+            get => _isVoyageur;
+            set
+            {
+                if (_isVoyageur == value) return;
+                _isVoyageur = value;
+                if (value && _isTransport)
+                {
+                    _isTransport = false;
+                    OnPropertyChanged(nameof(IsTransport));
+                }
+                OnPropertyChanged();
+                NotifyValidationPropertiesChanged();
+            }
+        }
 
         private bool _isTransport;
-        public bool IsTransport { get => _isTransport; set { _isTransport = value; OnPropertyChanged(); NotifyValidationPropertiesChanged(); } }
+        public bool IsTransport
+        {
+            get => _isTransport;
+            set
+            {
+                if (_isTransport == value) return;
+                _isTransport = value;
+                if (value && _isVoyageur)
+                {
+                    _isVoyageur = false;
+                    OnPropertyChanged(nameof(IsVoyageur));
+                }
+                OnPropertyChanged();
+                NotifyValidationPropertiesChanged();
+            }
+        }
 
         private BitmapImage? _logoPreview;
         public BitmapImage? LogoPreview { get => _logoPreview; set { _logoPreview = value; OnPropertyChanged(); } }
@@ -312,17 +402,64 @@ namespace FntrAudit.Viewmodels
             return client;
         }
 
-        private void Save()
+        private async void Save()
         {
             if (!Validate())
                 return;
 
-            RequestClose?.Invoke(true);
+            try
+            {
+                IsSaving = true;
+                ErrorMessage = null;
+                var client = BuildClient(_societeId);
+
+                if (IsEditMode)
+                    await _clientService.UpdateClientAsync(client);
+                else
+                    await _clientService.AddClientAsync(client);
+
+                RequestClose?.Invoke(true);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Erreur lors de la sauvegarde du client : {ex.Message}";
+            }
+            finally
+            {
+                IsSaving = false;
+            }
         }
 
         private void Cancel() => RequestClose?.Invoke(false);
 
-        private void Delete() => RequestClose?.Invoke(true);
+        private async void Delete()
+        {
+            if (!IsEditMode || _sourceClient == null)
+                return;
+
+            var confirmed = DeleteConfirmationDialog.Confirm(
+                Application.Current.MainWindow,
+                $"Supprimer le client '{Intitule ?? RaisonSociale ?? "Client"}' ?");
+
+            if (!confirmed)
+                return;
+
+            try
+            {
+                IsSaving = true;
+                ErrorMessage = null;
+                await _clientService.DeleteClientAsync(_sourceClient.id);
+                RequestClose?.Invoke(true);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Erreur lors de la suppression du client : {ex.Message}";
+            }
+            finally
+            {
+                IsSaving = false;
+            }
+        }
 
         private async void AddActivity()
         {
@@ -486,6 +623,36 @@ namespace FntrAudit.Viewmodels
                     SelectionChangedCommand = _activitySelectionChangedCommand
                 });
             }
+        }
+
+        private void SetEffectifRange(string selectedProperty, bool value)
+        {
+            if (value)
+            {
+                _has1SalOrMore = selectedProperty == nameof(Has1SalOrMore);
+                _has11SalOrMore = selectedProperty == nameof(Has11SalOrMore);
+                _has50SalOrMore = selectedProperty == nameof(Has50SalOrMore);
+                _has300SalOrMore = selectedProperty == nameof(Has300SalOrMore);
+                _has1000SalOrMore = selectedProperty == nameof(Has1000SalOrMore);
+            }
+            else
+            {
+                switch (selectedProperty)
+                {
+                    case nameof(Has1SalOrMore): _has1SalOrMore = false; break;
+                    case nameof(Has11SalOrMore): _has11SalOrMore = false; break;
+                    case nameof(Has50SalOrMore): _has50SalOrMore = false; break;
+                    case nameof(Has300SalOrMore): _has300SalOrMore = false; break;
+                    case nameof(Has1000SalOrMore): _has1000SalOrMore = false; break;
+                }
+            }
+
+            OnPropertyChanged(nameof(Has1SalOrMore));
+            OnPropertyChanged(nameof(Has11SalOrMore));
+            OnPropertyChanged(nameof(Has50SalOrMore));
+            OnPropertyChanged(nameof(Has300SalOrMore));
+            OnPropertyChanged(nameof(Has1000SalOrMore));
+            NotifyValidationPropertiesChanged();
         }
 
         private void NotifyValidationPropertiesChanged()
