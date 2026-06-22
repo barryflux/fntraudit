@@ -2,8 +2,10 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Net.Mail;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -128,6 +130,7 @@ namespace FntrAudit.Viewmodels
                 if (_isSaving == value) return;
                 _isSaving = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(SaveButtonText));
                 _saveCommand.RaiseCanExecuteChanged();
                 _deleteCommand.RaiseCanExecuteChanged();
             }
@@ -398,6 +401,7 @@ namespace FntrAudit.Viewmodels
             client.has300SalOrMore = Has300SalOrMore;
             client.has1000SalOrMore = Has1000SalOrMore;
             client.picture = LogoBytes;
+            client.activite = BuildActivitiesJson();
 
             return client;
         }
@@ -623,6 +627,24 @@ namespace FntrAudit.Viewmodels
                     SelectionChangedCommand = _activitySelectionChangedCommand
                 });
             }
+        }
+
+        private string BuildActivitiesJson()
+        {
+            var selectedActivities = ActivityItems
+                .Select(row => row.Item)
+                .OfType<Activity>()
+                .Where(activity => activity.isOk)
+                .Select(activity => new
+                {
+                    id = activity.id,
+                    intitule = activity.intitule,
+                    isOk = activity.isOk,
+                    auditId = activity.auditId
+                })
+                .ToList();
+
+            return JsonSerializer.Serialize(selectedActivities);
         }
 
         private void SetEffectifRange(string selectedProperty, bool value)
