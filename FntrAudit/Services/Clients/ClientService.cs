@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
 using FntrAudit.Data;
@@ -55,6 +56,8 @@ namespace FntrAudit.Services.Clients
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
 
+            ValidateClientForPersistence(client);
+
             await _dbContext.Client.AddAsync(client, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
@@ -63,6 +66,8 @@ namespace FntrAudit.Services.Clients
         {
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
+
+            ValidateClientForPersistence(client);
 
             var existingClient = await _dbContext.Client
                 .FirstOrDefaultAsync(c => c.id == client.id, cancellationToken);
@@ -121,6 +126,69 @@ namespace FntrAudit.Services.Clients
 
             _dbContext.Client.Remove(existingClient);
             await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        private static void ValidateClientForPersistence(Client client)
+        {
+            if (client.societeUser_Id == null)
+                throw new InvalidOperationException("Aucune société utilisateur n'est associée au client.");
+
+            if (string.IsNullOrWhiteSpace(client.intitule))
+                throw new InvalidOperationException("Le nom de la société est obligatoire.");
+
+            if (string.IsNullOrWhiteSpace(client.email))
+                throw new InvalidOperationException("L'email est obligatoire.");
+
+            if (!IsValidEmail(client.email))
+                throw new InvalidOperationException("Le format de l'email est invalide.");
+
+            if (string.IsNullOrWhiteSpace(client.siret))
+                throw new InvalidOperationException("Le SIRET est obligatoire.");
+
+            if (string.IsNullOrWhiteSpace(client.personneInterrogee))
+                throw new InvalidOperationException("La personne interrogée est obligatoire.");
+
+            if (string.IsNullOrWhiteSpace(client.fonction))
+                throw new InvalidOperationException("La fonction est obligatoire.");
+
+            if (!HasOneEffectifRange(client))
+                throw new InvalidOperationException("Une tranche d'effectif doit être sélectionnée.");
+
+            if (!client.cse && !client.pvCarence)
+                throw new InvalidOperationException("CSE ou PV de carence doit être sélectionné.");
+
+            if (client.cse && client.pvCarence)
+                throw new InvalidOperationException("CSE et PV de carence ne peuvent pas être sélectionnés ensemble.");
+
+            if (!client.isVoyageur && !client.isTransport)
+                throw new InvalidOperationException("Voyageur ou Marchandise / Transport doit être sélectionné.");
+
+            if (client.isVoyageur && client.isTransport)
+                throw new InvalidOperationException("Voyageur et Marchandise / Transport ne peuvent pas être sélectionnés ensemble.");
+        }
+
+        private static bool HasOneEffectifRange(Client client)
+        {
+            var selectedCount = 0;
+            if (client.has1SalOrMore) selectedCount++;
+            if (client.has11SalOrMore) selectedCount++;
+            if (client.has50SalOrMore) selectedCount++;
+            if (client.has300SalOrMore) selectedCount++;
+            if (client.has1000SalOrMore) selectedCount++;
+            return selectedCount == 1;
+        }
+
+        private static bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new MailAddress(email);
+                return addr.Address == email.Trim();
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
