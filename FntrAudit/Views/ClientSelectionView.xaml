@@ -30,6 +30,7 @@
                                    ItemsSource="{Binding Rows}"
                                    SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
                                    AddCommand="{Binding AddCommand}"
+                                   EditCommand="{Binding OpenCommand}"
                                    ShowAddButton="{Binding ShowAddButton}"
                                    ShowSearchBox="True"/>
     </Grid>

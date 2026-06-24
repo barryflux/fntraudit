@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -79,9 +80,22 @@ namespace FntrAudit.Viewmodels
             Client client,
             IActivityService activityService,
             IClientService clientService,
-            int societeId) : this(activityService, clientService, societeId)
+            int societeId)
         {
             _sourceClient = client;
+            _activityService = activityService;
+            _clientService = clientService;
+            _societeId = societeId;
+            _activitySelectionChangedCommand = new RelayCommand<EntityRowViewModel>(ActivitySelectionChanged);
+
+            _saveCommand = new RelayCommand(Save, () => !IsSaving);
+            _deleteCommand = new RelayCommand(Delete, () => IsEditMode && !IsSaving);
+            CancelCommand = new RelayCommand(Cancel, () => !IsSaving);
+            AddActivityCommand = new RelayCommand(AddActivity, () => !IsSaving);
+            PickLogoCommand = new RelayCommand(PickLogo, () => !IsSaving);
+            RemoveLogoCommand = new RelayCommand(RemoveLogo, () => !IsSaving);
+            EditActivityCommand = new RelayCommand<EntityRowViewModel>(EditActivity);
+            DeleteActivityCommand = new RelayCommand<EntityRowViewModel>(DeleteActivity);
 
             Intitule = client.intitule;
             PersonneSollicitante = client.personneSollicitante;
@@ -119,6 +133,7 @@ namespace FntrAudit.Viewmodels
             }
 
             Activities.Clear();
+            _ = LoadActivitiesAsync();
         }
 
         private bool _isSaving;
@@ -579,22 +594,13 @@ namespace FntrAudit.Viewmodels
             }
         }
 
-        private async void ActivitySelectionChanged(EntityRowViewModel? row)
+        private void ActivitySelectionChanged(EntityRowViewModel? row)
         {
             if (row?.Item is not Activity activity)
                 return;
 
-            try
-            {
-                ErrorMessage = null;
-                await _activityService.UpdateActivityAsync(activity);
-                row.Subtitle = activity.isOk ? "Sélectionnée" : string.Empty;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Erreur lors de la sauvegarde de la sélection : {ex.Message}";
-                await LoadActivitiesAsync();
-            }
+            ErrorMessage = null;
+            row.Subtitle = activity.isOk ? "Sélectionnée" : string.Empty;
         }
 
         private static bool IsValidEmail(string email)
@@ -614,28 +620,59 @@ namespace FntrAudit.Viewmodels
         {
             ActivityItems.Clear();
 
+            var selectedActivitiesById = ReadClientActivitiesSelection();
             var activities = await _activityService.GetActivitiesAsync();
 
             foreach (var activity in activities)
             {
+                var isSelected = selectedActivitiesById.TryGetValue(activity.id, out var selectedActivity)
+                    ? selectedActivity.isOk
+                    : false;
+
+                var clientActivity = new Activity
+                {
+                    id = activity.id,
+                    intitule = activity.intitule,
+                    auditId = activity.auditId,
+                    isOk = isSelected
+                };
+
                 ActivityItems.Add(new EntityRowViewModel
                 {
-                    Item = activity,
-                    Title = activity.intitule ?? "Activité",
-                    Subtitle = activity.isOk ? "Sélectionnée" : string.Empty,
+                    Item = clientActivity,
+                    Title = clientActivity.intitule ?? "Activité",
+                    Subtitle = clientActivity.isOk ? "Sélectionnée" : string.Empty,
                     ShowSelectionCheckBox = true,
                     SelectionChangedCommand = _activitySelectionChangedCommand
                 });
             }
         }
 
+        private Dictionary<int, ClientActivityJsonItem> ReadClientActivitiesSelection()
+        {
+            if (string.IsNullOrWhiteSpace(_sourceClient?.activite))
+                return new Dictionary<int, ClientActivityJsonItem>();
+
+            try
+            {
+                var activities = JsonSerializer.Deserialize<List<ClientActivityJsonItem>>(_sourceClient.activite);
+                return activities?
+                    .GroupBy(activity => activity.id)
+                    .ToDictionary(group => group.Key, group => group.First())
+                    ?? new Dictionary<int, ClientActivityJsonItem>();
+            }
+            catch (JsonException)
+            {
+                return new Dictionary<int, ClientActivityJsonItem>();
+            }
+        }
+
         private string BuildActivitiesJson()
         {
-            var selectedActivities = ActivityItems
+            var activities = ActivityItems
                 .Select(row => row.Item)
                 .OfType<Activity>()
-                .Where(activity => activity.isOk)
-                .Select(activity => new
+                .Select(activity => new ClientActivityJsonItem
                 {
                     id = activity.id,
                     intitule = activity.intitule,
@@ -644,7 +681,7 @@ namespace FntrAudit.Viewmodels
                 })
                 .ToList();
 
-            return JsonSerializer.Serialize(selectedActivities);
+            return JsonSerializer.Serialize(activities);
         }
 
         private void SetEffectifRange(string selectedProperty, bool value)
@@ -711,5 +748,13 @@ namespace FntrAudit.Viewmodels
 
         private void OnPropertyChanged([CallerMemberName] string? name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+        private sealed class ClientActivityJsonItem
+        {
+            public int id { get; set; }
+            public string? intitule { get; set; }
+            public bool isOk { get; set; }
+            public int auditId { get; set; }
+        }
     }
 }
